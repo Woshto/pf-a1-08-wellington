@@ -1,9 +1,15 @@
-package com.prettyflights.gates.model;
+package br.univali.es2.prettyflights.main.domain;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "tb_gate")
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class Gate {
 
     @Id
@@ -14,10 +20,10 @@ public class Gate {
     private String codigo;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private aeronaveCateg maxAeronaveCateg;
+    @Column(name = "max_aeronave_categ", nullable = false)
+    private AircraftCategory maxAeronaveCateg;
 
-    @Column(nullable = false)
+    @Column(name = "has_bridge", nullable = false)
     private boolean hasBridge;
 
     @Column(nullable = false)
@@ -25,18 +31,21 @@ public class Gate {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private GateStatus status = GateStatus.AVAILABLE;
+    private GateStatus status = GateStatus.DISPONIVEL;
 
-    public Gate() {}
-
-    public Gate(String codigo, aeronaveCateg maxAeronaveCateg,
+    public Gate(String codigo, AircraftCategory maxAeronaveCateg,
                 boolean hasBridge, String terminal) {
         this.codigo = codigo;
         this.maxAeronaveCateg = maxAeronaveCateg;
         this.hasBridge = hasBridge;
         this.terminal = terminal;
-        this.status = GateStatus.AVAILABLE;
+        this.status = GateStatus.DISPONIVEL;
     }
 
-    //getters e setters omitidos
+    public boolean canAccommodate(Voo voo) {
+        if (voo == null) {
+            return false;
+        }
+        return voo.getAircraftCategory().fitsIn(this.maxAeronaveCateg);
+    }
 }

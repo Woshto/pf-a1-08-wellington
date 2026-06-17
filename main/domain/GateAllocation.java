@@ -1,10 +1,17 @@
-package com.prettyflights.gates.model;
+package br.univali.es2.prettyflights.main.domain;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "tb_gate_allocation")
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class GateAllocation {
 
     @Id
@@ -19,25 +26,29 @@ public class GateAllocation {
     @JoinColumn(name = "gate_id")
     private Gate gate;
 
-    @Column(nullable = false)
+    @Column(name = "allocated_at", nullable = false)
     private LocalDateTime allocatedAt;
 
-    @Column(nullable = false)
+    @Column(name = "allocated_by", nullable = false)
     private String allocatedBy;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private AllocationStatus status = AllocationStatus.ACTIVE;
 
-    public GateAllocation() {}
-
     public GateAllocation(Voo voo, Gate gate, String allocatedBy) {
-        this.Voo = voo;
+        this.voo = voo;
         this.gate = gate;
         this.allocatedBy = allocatedBy;
         this.allocatedAt = LocalDateTime.now();
         this.status = AllocationStatus.ACTIVE;
     }
 
-    //getters e setters omitidos
+    public void cancel() {
+        this.status = AllocationStatus.CANCELLED;
+    }
+
+    public boolean isActive() {
+        return this.status == AllocationStatus.ACTIVE;
+    }
 }
